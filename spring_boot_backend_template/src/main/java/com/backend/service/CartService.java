@@ -17,5 +17,7 @@ public interface CartService {
     CartDto viewCart();
 
     void clearCart();
+
+	CartDto updateCart(AddToCartDto dto);
 }
 

@@ -87,5 +87,9 @@ public class CartController {
         cartService.clearCart();
         return ResponseEntity.ok("Cart cleared successfully");
     }
+    @PutMapping("/update")
+    public ResponseEntity<CartDto> updateCart(@RequestBody AddToCartDto dto) {
+        return ResponseEntity.ok(cartService.updateCart(dto));
+    }
 }
 

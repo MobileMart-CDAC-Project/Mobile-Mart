@@ -3,6 +3,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.backend.dto.AddToCartDto;
 import com.backend.dto.CartDto;
@@ -106,4 +107,34 @@ public class CartServiceImpl implements CartService {
         cart.setStatus("CONVERTED");
         cartRepository.save(cart);
     }
+    
+    @Override
+    @Transactional   // 🔥 REQUIRED
+    public CartDto updateCart(AddToCartDto dto) {
+
+        User user = userRepository.findByEmail(
+                SecurityUtil.getCurrentUserEmail()
+        ).orElseThrow(() -> new RuntimeException("User not found"));
+
+        Cart cart = cartRepository.findByUser(user)
+                .orElseThrow(() -> new RuntimeException("Cart not found"));
+
+        Product product = productRepository.findById(dto.getProductId())
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        CartItem cartItem = cartItemRepository
+                .findByCartAndProduct(cart, product)
+                .orElseThrow(() -> new RuntimeException("Item not found"));
+
+        if (dto.getQuantity() <= 0) {
+            cartItemRepository.delete(cartItem);
+        } else {
+            cartItem.setQuantity(dto.getQuantity());
+            cartItemRepository.save(cartItem);
+        }
+
+        return viewCart(); // recalc total
+    }
+
+    
 }
