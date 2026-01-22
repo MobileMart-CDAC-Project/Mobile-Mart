@@ -64,7 +64,11 @@ export default function Login() {
       <button className="btn btn-primary w-100" onClick={login}>
         Login
       </button>
+      <p className="text-center mt-2">
+        Don't have an account? <a href="/register">Register here!</a>
+      </p>
    </div>
+   
   );
 }
 
