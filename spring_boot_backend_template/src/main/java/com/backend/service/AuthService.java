@@ -8,4 +8,6 @@ import com.backend.dto.UserRegisterDto;
 public interface AuthService {
 	  AuthResponseDto login(LoginRequestDto dto);
 	   UserDto register(UserRegisterDto dto);
+	    void verifyOtp(String email, String emailOtp, String mobileOtp);
+
 }
