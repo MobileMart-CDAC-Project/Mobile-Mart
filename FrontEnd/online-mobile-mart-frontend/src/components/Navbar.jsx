@@ -31,10 +31,12 @@ function Navbar() {
 
     window.addEventListener("storage", syncAuth);
     window.addEventListener("cartUpdated", handleCartUpdate);
+    window.addEventListener("authChanged", syncAuth);
 
     return () => {
       window.removeEventListener("storage", syncAuth);
       window.removeEventListener("cartUpdated", handleCartUpdate);
+      window.removeEventListener("authChanged", syncAuth);
     };
   }, []);
 
@@ -51,6 +53,7 @@ function Navbar() {
 
   const logout = () => {
     localStorage.clear();
+    window.dispatchEvent(new Event("authChanged"));
     navigate("/login");
     window.location.reload();
   };

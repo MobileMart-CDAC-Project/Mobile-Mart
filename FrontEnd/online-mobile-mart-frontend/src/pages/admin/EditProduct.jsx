@@ -15,6 +15,7 @@ export default function EditProduct() {
     price: "",
     stockQuantity: "",
     description: "",
+    isActive: true,
     images: []
   });
 
@@ -106,6 +107,16 @@ export default function EditProduct() {
         value={product.description}
         onChange={handleChange}
       />
+
+      <label>Active Status</label>
+      <select className="form-control mb-3"
+        name="isActive"
+        value={product.isActive}
+        onChange={handleChange}
+      >
+        <option value={true}>Active</option>
+        <option value={false}>Inactive</option>
+      </select>
 
       <button className="btn btn-primary w-100 mb-4"
         onClick={updateProduct}>

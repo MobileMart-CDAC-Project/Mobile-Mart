@@ -40,4 +40,7 @@ public class ProductUpdateDto {
     @NotNull
     @Min(0)
     private Integer stockQuantity;
+
+    @NotNull
+    private Boolean isActive;
 }

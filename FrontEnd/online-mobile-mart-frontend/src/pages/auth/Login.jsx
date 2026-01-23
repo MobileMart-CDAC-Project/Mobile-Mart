@@ -29,6 +29,9 @@ export default function Login() {
 
       toast.success("Login successful");
 
+      // Trigger navbar update
+      window.dispatchEvent(new Event("authChanged"));
+
       // redirect based on role
       if (res.data.role === "ADMIN") {
         navigate("/admin/products");
