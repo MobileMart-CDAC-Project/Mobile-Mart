@@ -10,7 +10,7 @@ function Navbar() {
   const [role, setRole] = useState(localStorage.getItem("role"));
   const [cartCount, setCartCount] = useState(0);
 
-  // 🔁 keep navbar in sync
+  
   useEffect(() => {
     const syncAuth = () => {
       const currentToken = localStorage.getItem("token");
@@ -38,7 +38,7 @@ function Navbar() {
     };
   }, []);
 
-  // 🛒 load cart count
+  //  load cart count
   useEffect(() => {
     if (token && role === "USER") {
       axios.get("/cart")
@@ -99,6 +99,9 @@ function Navbar() {
 
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto">
+            {/* USER */}
+            {token && role === "USER" && (
+              <>
                 <li className="nav-item">
                   <Link
                     className="nav-link"
