@@ -48,9 +48,9 @@ function App() {
         <Route
           path="/admin/products"
           element={
-            // <ProtectedRoute role="ADMIN">
+           <ProtectedRoute role="ADMIN">
               <AdminDashboard />
-            // </ProtectedRoute>
+             </ProtectedRoute>
           }
         />
 
@@ -58,9 +58,9 @@ function App() {
           <Route
              path="/order-success"
              element={
-            //  <ProtectedRoute role="USER">
+              <ProtectedRoute role="USER">
                 <OrderSuccess />
-            // </ProtectedRoute>
+             </ProtectedRoute>
            }
           />
 
@@ -89,9 +89,9 @@ function App() {
         <Route
           path="/admin/orders"
           element={
-        //  <ProtectedRoute role="ADMIN">
+          <ProtectedRoute role="ADMIN">
           <AdminOrders />
-        // </ProtectedRoute>
+         </ProtectedRoute>
         }
         />
         <Route
@@ -106,27 +106,27 @@ function App() {
 <Route
   path="/admin/orders/:id"
   element={
-    // <ProtectedRoute role="ADMIN">
+     <ProtectedRoute role="ADMIN">
       <AdminOrderDetails />
-    // </ProtectedRoute>
+     </ProtectedRoute>
   }
 />
 
 <Route
   path="/admin/products/add"
   element={
-    // <ProtectedRoute role="ADMIN">
+     <ProtectedRoute role="ADMIN">
       <AddProduct />
-    // </ProtectedRoute>
+     </ProtectedRoute>
   }
 />
 
 <Route
   path="/admin/products/edit/:id"
   element={
-    // <ProtectedRoute role="ADMIN">
+     <ProtectedRoute role="ADMIN">
       <EditProduct />
-    // </ProtectedRoute>
+     </ProtectedRoute>
   }
 />
 
