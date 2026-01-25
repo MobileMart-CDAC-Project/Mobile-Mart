@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import java.util.Map;
+
 
 //@RestController
 //@RequestMapping("/api/auth")
@@ -70,5 +72,18 @@ public class AuthController {
 
         return ResponseEntity.ok(authService.login(dto));
     }
+    
+    @PostMapping("/verify-otp")
+    public ResponseEntity<String> verifyOtp(@RequestBody Map<String, String> req) {
+
+        authService.verifyOtp(
+            req.get("email"),
+            req.get("emailOtp"),
+            req.get("mobileOtp")
+        );
+
+        return ResponseEntity.ok("OTP verified. Registration completed.");
+    }
+
 }
 

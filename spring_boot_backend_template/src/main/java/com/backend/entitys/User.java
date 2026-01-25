@@ -45,6 +45,20 @@ public class User {
     private Boolean active = true;
 
     private LocalDateTime createdAt = LocalDateTime.now();
+    
+    @Column(nullable = false)
+    private boolean emailVerified = false;
+
+    @Column(nullable = false)
+    private boolean mobileVerified = false;
+
+    private String emailOtp;
+    private String mobileOtp;
+
+    private LocalDateTime otpExpiry;
+
+ 
+
 }
 
 
