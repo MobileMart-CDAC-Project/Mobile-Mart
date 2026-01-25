@@ -28,4 +28,20 @@ public class EmailServiceImpl implements EmailService {
 
         mailSender.send(message);
     }
+
+	@Override
+	public void sendRegistrationSuccessEmail(String toEmail, String name) {
+		 SimpleMailMessage msg = new SimpleMailMessage();
+	        msg.setFrom("MobileMart <yourgmail@gmail.com>");
+	        msg.setTo(toEmail);
+	        msg.setSubject("Welcome to MobileMart 🎉");
+	        msg.setText(
+	            "Hi " + name + ",\n\n" +
+	            "Your registration has been completed successfully.\n" +
+	            "You can now log in and start shopping on MobileMart.\n\n" +
+	            "Regards,\n" +
+	            "MobileMart Team"
+	        );
+	        mailSender.send(msg);		
+	}
 }

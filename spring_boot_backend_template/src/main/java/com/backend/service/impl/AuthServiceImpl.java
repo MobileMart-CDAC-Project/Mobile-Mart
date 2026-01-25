@@ -225,6 +225,7 @@ public class AuthServiceImpl implements AuthService {
 	        throw new RuntimeException("Invalid OTP");
 	    }
 
+	    // activating user
 	    user.setEmailVerified(true);
 	    user.setMobileVerified(true);
 	    user.setActive(true);
@@ -234,5 +235,12 @@ public class AuthServiceImpl implements AuthService {
 	    user.setOtpExpiry(null);
 
 	    userRepository.save(user);		
+	    
+	    // send confirmation email email after registration
+	    emailService.sendRegistrationSuccessEmail(
+	            user.getEmail(),
+	            user.getName()
+	        );
+	    
 	}
 }
