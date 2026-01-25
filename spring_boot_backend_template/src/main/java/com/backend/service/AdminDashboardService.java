@@ -1,7 +1,12 @@
-package com.backend.service;
-
-import com.backend.dto.DashboardStatsDto;
-
-public interface AdminDashboardService {
-    DashboardStatsDto getStats();
-}
+//package com.backend.service;
+//
+//import java.util.List;
+//
+//import com.backend.dto.DashboardStatsDto;
+//import com.backend.dto.OrderDto;
+//
+//public interface AdminDashboardService {
+//	 DashboardStatsDto getStats();
+//	    List<OrderDto> getAllOrders();
+//	    void updateOrderStatus(Long orderId, String status);
+//}

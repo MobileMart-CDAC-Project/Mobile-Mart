@@ -104,14 +104,7 @@ public class AuthServiceImpl implements AuthService {
         user.setEmail(dto.getEmail());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user.setMobile(dto.getMobile());
-
-        // Check if this is an admin registration (special email pattern)
-        if (dto.getEmail().endsWith("@admin.com")) {
-            user.setRole(Role.ADMIN);
-        } else {
-            user.setRole(Role.USER); // default role
-        }
-
+        user.setRole(Role.USER); // default role
         user.setActive(true);
         user.setCreatedAt(LocalDateTime.now());
 
