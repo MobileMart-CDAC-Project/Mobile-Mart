@@ -19,6 +19,7 @@ package com.backend.service.impl;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,7 @@ import com.backend.entitys.User;
 import com.backend.repository.UserRepository;
 import com.backend.security.JwtUtil;
 import com.backend.service.AuthService;
+import com.backend.service.EmailService;
 import com.backend.util.OtpUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -89,6 +91,9 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
+    @Autowired
+    private EmailService emailService;
+    
     @Override
     public UserDto register(UserRegisterDto dto) {
 
@@ -108,15 +113,18 @@ public class AuthServiceImpl implements AuthService {
     	    }
 
     	    // Case 2: user exists but NOT verified → resend OTP
-    	    existingUser.setEmailOtp(OtpUtil.generateOtp());
-    	    existingUser.setMobileOtp(OtpUtil.generateOtp());
+    	    String otp = OtpUtil.generateOtp();
+            existingUser.setEmailOtp(otp);
+            existingUser.setMobileOtp(otp);
     	    existingUser.setOtpExpiry(LocalDateTime.now().plusMinutes(5));
 
     	    userRepository.save(existingUser);
 
+    	    emailService.sendOtpEmail(existingUser.getEmail(), existingUser.getEmailOtp());
     	    // 🔴 TEMP: log OTPs (for testing)
     	    System.out.println("Resent Email OTP: " + existingUser.getEmailOtp());
     	    System.out.println("Resent Mobile OTP: " + existingUser.getMobileOtp());
+
 
     	    // return existing user info (no new user created)
     	    UserDto userDto = new UserDto();
@@ -144,13 +152,17 @@ public class AuthServiceImpl implements AuthService {
         user.setMobileVerified(false);
         
         //otp verification
-        user.setEmailOtp(OtpUtil.generateOtp());
-        user.setMobileOtp(OtpUtil.generateOtp());
+//        user.setEmailOtp(OtpUtil.generateOtp());
+//        user.setMobileOtp(OtpUtil.generateOtp());
+        String otp = OtpUtil.generateOtp();
+        user.setEmailOtp(otp);
+        user.setMobileOtp(otp);
         user.setOtpExpiry(LocalDateTime.now().plusMinutes(5));
 
         
         User savedUser = userRepository.save(user);
 
+        emailService.sendOtpEmail(user.getEmail(), user.getEmailOtp());
 
         // 🔴 TEMP: log OTPs (for testing)
         System.out.println("Email OTP: " + savedUser.getEmailOtp());
@@ -166,6 +178,7 @@ public class AuthServiceImpl implements AuthService {
 
         return userDto;
     }
+
 
     @Override
     public AuthResponseDto login(LoginRequestDto dto) {
