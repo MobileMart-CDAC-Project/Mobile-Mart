@@ -1,7 +1,4 @@
-import { useState } from "react";
-import axios from "../../utils/axiosInstance";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import RegisterForm from "../../components/RegisterForm";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -182,4 +179,6 @@ export default function Register() {
       </p>
     </div>
   );
+}
+  return <RegisterForm />;
 }

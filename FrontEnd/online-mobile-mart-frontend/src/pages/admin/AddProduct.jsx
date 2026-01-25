@@ -20,15 +20,29 @@ export default function AddProduct() {
   };
 
   const saveProduct = async () => {
+    // Validation
+    if (!product.name || !product.price || !product.stockQuantity) {
+      toast.error("Name, price, and stock quantity are required");
+      return;
+    }
+
+    if (product.price <= 0 || product.stockQuantity < 0) {
+      toast.error("Price must be positive and stock cannot be negative");
+      return;
+    }
+
     try {
+      console.log("Sending product data:", product);
       const res = await axios.post("/admin/products", product);
+      console.log("Response:", res.data);
       toast.success("Product created");
 
       // 👉 redirect to edit page with productId
       navigate(`/admin/products/edit/${res.data.productId}`);
 
-    } catch {
-      toast.error("Failed to create product");
+    } catch (error) {
+      console.error("Add product error:", error);
+      toast.error(`Failed to create product: ${error.response?.data?.message || error.message}`);
     }
   };
 

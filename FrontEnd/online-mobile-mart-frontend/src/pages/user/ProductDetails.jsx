@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "../../utils/axiosInstance";
 import { toast } from "react-toastify";
 import LoginModal from "../../components/LoginModal";
+import ProductComments from "../../components/ProductComments";
 
 function ProductDetails() {
   const { id } = useParams();
@@ -11,7 +12,6 @@ function ProductDetails() {
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   const [product, setProduct] = useState(null);
-  const [comment, setComment] = useState("");
 
   const role = localStorage.getItem("role");
   const token = localStorage.getItem("token");
@@ -75,6 +75,7 @@ const addToCart = () => {
   })
   .then(() => {
     toast.success("Product added to cart");
+    window.dispatchEvent(new Event('cartUpdated')); // notify navbar
     navigate("/cart");
   })
   .catch(() => {
@@ -125,27 +126,8 @@ const addToCart = () => {
 
       <hr />
 
-      {/* COMMENTS */}
-      <h5>Comments</h5>
-      <ul>
-        {(product.comments || []).map((c, index) => (
-          <li key={index}>{c.text}</li>
-        ))}
-      </ul>
-
-      {/* ADD COMMENT */}
-      {role === "USER" && (
-        <>
-          <textarea
-            className="form-control"
-            value={comment}
-            onChange={e => setComment(e.target.value)}
-          />
-          <button className="btn btn-primary mt-2">
-            Add Comment
-          </button>
-        </>
-      )}
+      {/* PRODUCT COMMENTS */}
+      <ProductComments productId={id} />
     </div>
   );
 }

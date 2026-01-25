@@ -127,8 +127,9 @@ export default function AdminDashboard() {
     try {
       const res = await axios.get("/admin/products");
       setProducts(res.data);
-    } catch {
-      toast.error("Failed to load products");
+    } catch (error) {
+      console.error("Load products error:", error);
+      toast.error(`Failed to load products: ${error.response?.data?.message || error.message}`);
     }
   };
 
@@ -136,8 +137,9 @@ export default function AdminDashboard() {
     try {
       const res = await axios.get("/admin/dashboard");
       setStats(res.data);
-    } catch {
-      toast.error("Failed to load stats");
+    } catch (error) {
+      console.error("Load stats error:", error);
+      toast.error(`Failed to load stats: ${error.response?.data?.message || error.message}`);
     }
   };
 

@@ -36,6 +36,7 @@ function Cart() {
       quantity: newQty
     });
     loadCart(); // refresh cart
+    window.dispatchEvent(new Event('cartUpdated')); // notify navbar
   } catch {
     toast.error("Failed to update quantity");
   }
@@ -47,8 +48,13 @@ function Cart() {
   // =====================
   const removeItem = async (productId) => {
     try {
-      await axios.delete(`/cart/remove/${productId}`);
+      await axios.put("/cart/update", {
+        productId: productId,
+        quantity: 0
+      });
       loadCart();
+      window.dispatchEvent(new Event('cartUpdated')); // notify navbar
+      toast.success("Item removed from cart");
     } catch {
       toast.error("Failed to remove item");
     }
@@ -61,6 +67,7 @@ function Cart() {
     try {
       await axios.post("/orders/place");
       toast.success("Order placed successfully");
+      window.dispatchEvent(new Event('cartUpdated')); // notify navbar
       navigate("/order-success");
     } catch {
       toast.error("Failed to place order");

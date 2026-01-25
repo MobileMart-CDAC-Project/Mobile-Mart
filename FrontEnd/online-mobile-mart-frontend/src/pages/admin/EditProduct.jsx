@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "../../utils/axiosInstance";
 import { toast } from "react-toastify";
+import ImageUpload from "../../components/ImageUpload";
 
 export default function EditProduct() {
 
@@ -14,10 +15,9 @@ export default function EditProduct() {
     price: "",
     stockQuantity: "",
     description: "",
+    isActive: true,
     images: []
   });
-
-  const [newImages, setNewImages] = useState([]);
 
   // ================= LOAD PRODUCT =================
   useEffect(() => {
@@ -42,44 +42,28 @@ export default function EditProduct() {
   };
 
   // ================= UPLOAD IMAGES =================
- const uploadImages = async () => {
-  if (newImages.length === 0) {
-    toast.warning("Select images first");
-    return;
-  }
-
-  const formData = new FormData();
-  newImages.forEach(file => formData.append("files", file));
-
-  try {
-    await axios.post(
-      `/admin/products/${id}/images`,
-      formData,
-      { headers: { "Content-Type": "multipart/form-data" } }
-    );
-
-    toast.success("Images uploaded");
-    window.location.reload();
-
-  } catch {
-    toast.error("Image upload failed");
-  }
-};
+  const handleImageUploadSuccess = (uploadedImages) => {
+    // Refresh product data to show new images
+    axios.get(`/products/${id}`)
+      .then(res => setProduct(res.data))
+      .catch(() => toast.error("Failed to refresh product images"));
+  };
 
 
 
   // ================= DELETE IMAGE =================
-//   const deleteImage = async (imageId) => {
-//     try {
-//       await axios.delete(`/admin/products/images/${imageId}`);
-//       setProduct({
-//         ...product,
-//         images: product.images.filter(i => i.id !== imageId)
-//       });
-//     } catch {
-//       toast.error("Failed to delete image");
-//     }
-//   };
+  const deleteImage = async (imageId) => {
+    try {
+      await axios.delete(`/admin/products/${imageId}`);
+      setProduct({
+        ...product,
+        images: product.images.filter(i => i.imageId !== imageId)
+      });
+      toast.success("Image deleted");
+    } catch {
+      toast.error("Failed to delete image");
+    }
+  };
 
   return (
     <div className="container mt-4 col-md-7">
@@ -124,6 +108,16 @@ export default function EditProduct() {
         onChange={handleChange}
       />
 
+      <label>Active Status</label>
+      <select className="form-control mb-3"
+        name="isActive"
+        value={product.isActive}
+        onChange={handleChange}
+      >
+        <option value={true}>Active</option>
+        <option value={false}>Inactive</option>
+      </select>
+
       <button className="btn btn-primary w-100 mb-4"
         onClick={updateProduct}>
         Update Product Details
@@ -132,11 +126,11 @@ export default function EditProduct() {
       <hr />
 
       {/* EXISTING IMAGES */}
-      <h5>Product Images</h5>
+      <h5>Current Product Images</h5>
       <div className="d-flex gap-3 flex-wrap mb-3">
         {product.images.map(img => (
          <div key={img.imageId} className="text-center">
-         <img src={img.imageUrl} width="120" />
+         <img src={img.imageUrl} width="120" className="img-thumbnail" />
             <button
             className="btn btn-danger btn-sm mt-1"
             onClick={() => deleteImage(img.imageId)}
@@ -147,17 +141,14 @@ export default function EditProduct() {
         ))}
       </div>
 
-      {/* ADD NEW IMAGES */}
-      <input type="file"
-        multiple
-        className="form-control mb-2"
-        onChange={e => setNewImages([...e.target.files])}
-      />
+      <hr />
 
-      <button className="btn btn-secondary w-100"
-        onClick={uploadImages}>
-        Add New Images
-      </button>
+      {/* UPLOAD NEW IMAGES */}
+      <h5>Upload New Images</h5>
+      <ImageUpload
+        productId={id}
+        onUploadSuccess={handleImageUploadSuccess}
+      />
 
     </div>
   );

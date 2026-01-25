@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "../../utils/axiosInstance";
+import { useNavigate, Link } from "react-router-dom";
+import axiosInstance from "../../utils/axiosInstance";
 import { toast } from "react-toastify";
 
 export default function Login() {
@@ -17,7 +17,7 @@ export default function Login() {
     }
 
     try {
-      const res = await axios.post("/auth/login", {
+      const res = await axiosInstance.post("/auth/login", {
         email,
         password
       });
@@ -28,6 +28,9 @@ export default function Login() {
       localStorage.setItem("userId", res.data.userId);
 
       toast.success("Login successful");
+
+      // Trigger navbar update
+      window.dispatchEvent(new Event("authChanged"));
 
       // redirect based on role
       if (res.data.role === "ADMIN") {
@@ -64,9 +67,13 @@ export default function Login() {
       <button className="btn btn-primary w-100" onClick={login}>
         Login
       </button>
-      <p className="text-center mt-2">
-        Don't have an account? <a href="/register">Register here!</a>
-      </p>
+
+      <div className="text-center mt-3">
+        <span className="text-muted">Don't have an account? </span>
+        <Link to="/register" className="text-decoration-none fw-bold" style={{ color: '#007bff' }}>
+          Create one
+        </Link>
+      </div>
    </div>
    
   );
