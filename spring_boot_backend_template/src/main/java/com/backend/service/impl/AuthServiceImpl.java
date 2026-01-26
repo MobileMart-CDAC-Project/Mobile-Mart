@@ -192,7 +192,7 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("Invalid email or password");
         }
 
-     // 2.5 OTP VERIFICATION CHECK (ADD HERE)
+     // 2.5 OTP VERIFICATION CHECK during log in 
         
         if (!user.getActive()) {
             throw new RuntimeException("Please verify OTP to activate account");
@@ -243,4 +243,60 @@ public class AuthServiceImpl implements AuthService {
 	        );
 	    
 	}
+
+	//to send forgot password otp on email 
+	@Override
+	public void sendForgotPasswordOtp(String email) {
+		 User user = userRepository.findByEmail(email)
+		            .orElseThrow(() -> new RuntimeException("Email not registered"));
+
+		    // for saftey - only allow active users
+		    if (!user.getActive()) {
+		        throw new RuntimeException("Account not activated");
+		    }
+
+		    String otp = OtpUtil.generateOtp();
+
+		    user.setEmailOtp(otp);
+		    user.setOtpExpiry(LocalDateTime.now().plusMinutes(5));
+
+		    userRepository.save(user);
+
+		    emailService.sendOtpEmail(user.getEmail(), otp);
+
+		    // TEMP log (to be removed in production)
+		    System.out.println("Forgot Password OTP: " + otp);		
+	}
+
+	//reset password
+	@Override
+	public void resetPassword(String email, String otp, String newPassword) {
+
+    User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+    if (user.getOtpExpiry() == null ||
+        user.getOtpExpiry().isBefore(LocalDateTime.now())) {
+        throw new RuntimeException("OTP expired");
+    }
+
+    if (!otp.equals(user.getEmailOtp())) {
+        throw new RuntimeException("Invalid OTP");
+    }
+
+    user.setPassword(passwordEncoder.encode(newPassword));
+
+    // clear OTP after use
+    user.setEmailOtp(null);
+    user.setOtpExpiry(null);
+
+    userRepository.save(user);	
+    
+    //to send password change confirmation to user
+    emailService.sendPasswordChangeConfirmation(
+            user.getEmail(),
+            user.getName()
+    );
+	}
+	
 }

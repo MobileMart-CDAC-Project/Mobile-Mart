@@ -7,6 +7,8 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
 
   const navigate = useNavigate();
 
@@ -45,8 +47,8 @@ export default function Login() {
   };
 
   return (
-   
-   <div className="container mt-5 col-md-4">
+
+    <div className="container mt-5 col-md-4">
       <h3 className="text-center mb-3">Login</h3>
 
       <input
@@ -63,10 +65,26 @@ export default function Login() {
         value={password}
         onChange={e => setPassword(e.target.value)}
       />
+      {/* forgot password link */}
+      <div className="d-flex justify-content-end mb-4">
+        <Link to="/forgot-password"
+          className="text-decoration-none fw-bold "
+          style={{ color: '#007bff' }} >
+          Forgot password?
+        </Link>
+      </div>
 
-      <button className="btn btn-primary w-100" onClick={login}>
+      {/* <button className="btn btn-primary w-100" onClick={login}>
         Login
+      </button> */}
+      <button
+        className="btn btn-primary w-100"
+        onClick={login}
+        disabled={loading}
+      >
+        {loading ? "Logging in..." : "Login"}
       </button>
+
 
       <div className="text-center mt-3">
         <span className="text-muted">Don't have an account? </span>
@@ -74,8 +92,8 @@ export default function Login() {
           Create one
         </Link>
       </div>
-   </div>
-   
+    </div>
+
   );
 }
 
