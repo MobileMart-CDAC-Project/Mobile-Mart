@@ -147,6 +147,7 @@ export default function Home() {
 
       <SearchAndFilter onSearch={handleSearch} onFilter={handleFilter} />
 
+      {/* products to display */}
       <div className="row">
         {filteredProducts.length === 0 ? (
           <div className="col-12 text-center">

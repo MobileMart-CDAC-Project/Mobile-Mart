@@ -33,6 +33,12 @@ public class OrderController {
         return ResponseEntity.ok(orderService.placeOrder());
     }
 
+    @PostMapping("/{orderId}/confirm")
+    public ResponseEntity<String> confirmOrder(@PathVariable Long orderId) {
+        orderService.clearCartForOrder(orderId);
+        return ResponseEntity.ok("Cart cleared successfully");
+    }
+
     @GetMapping("/my")
     public ResponseEntity<List<OrderDto>> myOrders() {
         return ResponseEntity.ok(orderService.myOrders());

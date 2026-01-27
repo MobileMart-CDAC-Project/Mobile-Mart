@@ -103,4 +103,30 @@ public class ImageServiceImpl implements ImageService {
         // delete DB record
         productImageRepository.delete(image);
     }
+
+    // ===============================
+    // DELETE IMAGE BY FILENAME
+    // ===============================
+    @Override
+    public void deleteImageByFilename(@NonNull String filename) {
+
+        // Find ProductImage by URL containing filename
+        String imageUrl = "http://localhost:8080/images/products/" + filename;
+        ProductImage image = productImageRepository.findAll()
+                .stream()
+                .filter(img -> img.getImageUrl().equals(imageUrl))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Image not found"));
+
+        // delete physical file
+        try {
+            Path path = Paths.get(IMAGE_DIR + filename);
+            Files.deleteIfExists(path);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to delete image file");
+        }
+
+        // delete DB record
+        productImageRepository.delete(image);
+    }
 }

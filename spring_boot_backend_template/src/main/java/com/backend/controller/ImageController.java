@@ -14,7 +14,7 @@ import com.backend.service.ImageService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/admin/products")
+@RequestMapping("/api/admin")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
 public class ImageController {
@@ -22,7 +22,7 @@ public class ImageController {
     private final ImageService imageService;
 
     // upload 4–5 images
-    @PostMapping("/{productId}/images")
+    @PostMapping("/products/{productId}/images")
     public ResponseEntity<List<String>> uploadImages(
             @PathVariable @NonNull Long productId,
             @RequestParam("files") MultipartFile[] files) {
@@ -32,11 +32,19 @@ public class ImageController {
         );
     }
 
-    // delete single image
-    @DeleteMapping("/{imageId}")
+    // delete single image by ID
+    @DeleteMapping("/products/{imageId}")
     public ResponseEntity<Void> deleteImage(@PathVariable @NonNull Long imageId) {
 
         imageService.deleteImage(imageId);
+        return ResponseEntity.noContent().build();
+    }
+
+    // delete image by filename
+    @DeleteMapping("/images/{filename}")
+    public ResponseEntity<Void> deleteImageByFilename(@PathVariable @NonNull String filename) {
+
+        imageService.deleteImageByFilename(filename);
         return ResponseEntity.noContent().build();
     }
 }

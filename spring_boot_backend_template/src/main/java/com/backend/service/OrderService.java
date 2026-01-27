@@ -12,6 +12,7 @@ public interface OrderService {
 		OrderDto placeOrder();
 	    List<OrderDto> myOrders();
 	    OrderDetailsDto orderDetails(@NonNull Long orderId);
+	    void clearCartForOrder(@NonNull Long orderId);
 	    
 	    // admin
 	    List<OrderDto> getAllOrders();

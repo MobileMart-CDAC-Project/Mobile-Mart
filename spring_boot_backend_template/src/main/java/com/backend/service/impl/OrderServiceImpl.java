@@ -82,8 +82,7 @@ public class OrderServiceImpl implements OrderService {
         savedOrder.setTotalAmount(total);
         orderRepository.save(savedOrder);
 
-        // 4. Clear cart
-        cartItemRepository.deleteByCart(cart);
+        // 4. Cart will be cleared only after successful payment verification
 
         OrderDto dto = new OrderDto();
         dto.setOrderId(savedOrder.getOrderId());
@@ -168,6 +167,19 @@ public class OrderServiceImpl implements OrderService {
                     return dto;
                 })
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public void clearCartForOrder(@NonNull Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        User user = order.getUser();
+        Cart cart = cartRepository.findByUser(user)
+                .orElseThrow(() -> new RuntimeException("Cart not found"));
+
+        cartItemRepository.deleteByCart(cart);
     }
     
     @Override
