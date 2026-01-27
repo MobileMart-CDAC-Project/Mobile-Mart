@@ -24,6 +24,9 @@ import AdminOrderDetails from "./pages/admin/AdminOrderDetails";
 import AddProduct from "./pages/admin/AddProduct";
 import EditProduct from "./pages/admin/EditProduct";
 import VerifyOtp from "./pages/auth/VerifyOtp";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
+import VerifyForgotOtp from "./pages/auth/VerifyForgotOtp";
 function App() {
   return (
     <>
@@ -35,9 +38,11 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
-
-
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/verify-forgot-otp" element={<VerifyForgotOtp />} />
         <Route path="/product/:id" element={<ProductDetails />} />
+        <Route path="/unauthorized" element={<Unauthorized />} />
 
         {/* ================= USER PROTECTED ================= */}
         <Route
@@ -45,6 +50,15 @@ function App() {
           element={
             <ProtectedRoute role="USER">
               <MyOrders />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/orders/:id"
+          element={
+            <ProtectedRoute role="USER">
+              <OrderDetails />
             </ProtectedRoute>
           }
         />
@@ -57,6 +71,20 @@ function App() {
           }
         />
 
+        <Route path="/cart" element={
+          <ProtectedRoute role="USER">
+            <Cart />
+          </ProtectedRoute>
+        } />
+
+ <Route
+          path="/order-success"
+          element={
+            <ProtectedRoute role="USER">
+              <OrderSuccess />
+            </ProtectedRoute>
+          }
+        />
         {/* ================= ADMIN PROTECTED ================= */}
         <Route
           path="/admin/products"
@@ -66,84 +94,39 @@ function App() {
             </ProtectedRoute>
           }
         />
-
-          
-          <Route
-             path="/order-success"
-             element={
-             <ProtectedRoute role="USER">
-                <OrderSuccess />
-            </ProtectedRoute>
-           }
-          />
-
-        <Route path="/cart" element={
-           <ProtectedRoute role="USER">
-           <Cart />
-           </ProtectedRoute>
-        } />
-        <Route
-          path="/orders"
+<Route
+          path="/admin/products/add"
           element={
-          <ProtectedRoute role="USER">
-           <MyOrders />
-         </ProtectedRoute>
-         }
+            <ProtectedRoute role="ADMIN">
+              <AddProduct />
+            </ProtectedRoute>
+          }
         />
 
-        <Route
-           path="/orders/:id"
-           element={
-         <ProtectedRoute role="USER">
-          <OrderDetails />
-        </ProtectedRoute>
-        }
+ <Route
+          path="/admin/products/edit/:id"
+          element={
+            <ProtectedRoute role="ADMIN">
+              <EditProduct />
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/admin/orders"
           element={
-         <ProtectedRoute role="ADMIN">
-          <AdminOrders />
-        </ProtectedRoute>
-        }
+            <ProtectedRoute role="ADMIN">
+              <AdminOrders />
+            </ProtectedRoute>
+          }
         />
         <Route
-         path="/admin/orders/:id"
-        element={
-         <ProtectedRoute role="ADMIN">
-           <AdminOrderDetails />
-       </ProtectedRoute>
-         }
-      />
-
-<Route
-  path="/admin/orders/:id"
-  element={
-    <ProtectedRoute role="ADMIN">
-      <AdminOrderDetails />
-    </ProtectedRoute>
-  }
-/>
-
-<Route
-  path="/admin/products/add"
-  element={
-    <ProtectedRoute role="ADMIN">
-      <AddProduct />
-    </ProtectedRoute>
-  }
-/>
-
-<Route
-  path="/admin/products/edit/:id"
-  element={
-    <ProtectedRoute role="ADMIN">
-      <EditProduct />
-    </ProtectedRoute>
-  }
-/>
-
-        <Route path="/unauthorized" element={<Unauthorized />} />
+          path="/admin/orders/:id"
+          element={
+            <ProtectedRoute role="ADMIN">
+              <AdminOrderDetails />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </>
   );

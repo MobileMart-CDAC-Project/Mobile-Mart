@@ -81,6 +81,27 @@ public class AuthController {
 
         return ResponseEntity.ok("OTP verified. Registration completed.");
     }
+    
+    //forgot password 
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(
+            @RequestBody Map<String, String> req) {
 
+        authService.sendForgotPasswordOtp(req.get("email"));
+        return ResponseEntity.ok("OTP sent to registered email");
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(
+            @RequestBody Map<String, String> req) {
+
+        authService.resetPassword(
+                req.get("email"),
+                req.get("otp"),
+                req.get("newPassword")
+        );
+
+        return ResponseEntity.ok("Password reset successful");
+    }
 }
 

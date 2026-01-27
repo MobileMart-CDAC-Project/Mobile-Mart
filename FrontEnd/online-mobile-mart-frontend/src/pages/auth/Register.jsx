@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import axiosInstance from "../../utils/axiosInstance";
-import RegisterForm from "../../components/RegisterForm";
-
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import "../../cssStyles/auth.css"
 
 export default function Register() {
   const navigate = useNavigate();
@@ -17,45 +17,24 @@ export default function Register() {
   });
 
   const [showPassword, setShowPassword] = useState(false);
-  const [passwordError, setPasswordError] = useState("");
-  const [passwordStrength, setPasswordStrength] = useState({
-    percent: 0,
-    color: "bg-danger"
-  });
+  const [error, setError] = useState("");
 
-  // 🔐 password strength
-  const calculatePasswordStrength = (password) => {
-    let score = 0;
-
-    if (password.length >= 8) score++;
-    if (/[A-Z]/.test(password)) score++;
-    if (/[a-z]/.test(password)) score++;
-    if (/\d/.test(password)) score++;
-    if (/[@$!%*?&]/.test(password)) score++;
-
-    if (score <= 2) return { percent: 25, color: "bg-danger" };
-    if (score <= 4) return { percent: 60, color: "bg-warning" };
-    return { percent: 100, color: "bg-success" };
+  // 🔐 password rules 
+  const [showRules, setShowRules] = useState(false);
+  const rules = {
+    length: form.password.length >= 8,
+    upper: /[A-Z]/.test(form.password),
+    lower: /[a-z]/.test(form.password),
+    number: /[0-9]/.test(form.password),
+    special: /[@$!%*?&]/.test(form.password),
   };
 
-  const validatePassword = (password) => {
-    const regex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
-
-    if (!regex.test(password)) {
-      return "Password must be 8+ chars, include uppercase, number & special char";
-    }
-    return "";
-  };
+  const strength = Object.values(rules).filter(Boolean).length * 20;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
-
-    if (name === "password") {
-      setPasswordStrength(calculatePasswordStrength(value));
-      setPasswordError(validatePassword(value));
-    }
+    setError("");
   };
 
   const register = async () => {
@@ -64,8 +43,8 @@ export default function Register() {
       return;
     }
 
-    if (passwordError) {
-      toast.error(passwordError);
+    if (strength < 100) {
+      toast.error("Password does not meet requirements");
       return;
     }
 
@@ -82,14 +61,13 @@ export default function Register() {
         mobile: form.mobile
       });
 
-      toast.success("OTP sent to email and mobile. Verification required.");
+      toast.success("OTP sent to email and mobile");
       navigate("/verify-otp", {
         state: {
           email: form.email,
           mobile: form.mobile
         }
       });
-
 
     } catch (err) {
       toast.error(err.response?.data?.message || "Registration failed");
@@ -114,54 +92,85 @@ export default function Register() {
         onChange={handleChange}
       />
 
-      {/* PASSWORD */}
-      <div className="mb-2">
-        <div className="input-group">
-          <input
-            type={showPassword ? "text" : "password"}
-            className="form-control"
-            placeholder="Password"
-            name="password"
-            onChange={handleChange}
-          />
-          <span
-            className="input-group-text"
-            style={{ cursor: "pointer" }}
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
-          </span>
-        </div>
-
-        <div className="progress mt-1" style={{ height: "6px" }}>
-          <div
-            className={`progress-bar ${passwordStrength.color}`}
-            style={{ width: `${passwordStrength.percent}%` }}
-          ></div>
-        </div>
-
-        <small className="text-danger">{passwordError}</small>
+      {/* PASSWORD INPUT + EYE */}
+      <div className="input-group mb-2">
+        <input
+          type={showPassword ? "text" : "password"}
+          className="form-control"
+          placeholder="Password"
+          name="password"
+          onChange={handleChange}
+          onFocus={() => setShowRules(true)}
+        />
+        <span
+          className="input-group-text"
+          style={{ cursor: "pointer" }}
+          onClick={() => setShowPassword(!showPassword)}
+        >
+          {showPassword ? <FaEyeSlash /> : <FaEye />}
+        </span>
       </div>
 
+      {/* STRENGTH BAR 
+      <div className="progress mb-2 password-strength">
+        <div
+          className={`progress-bar ${strength < 60 ? "bg-danger" :
+              strength < 80 ? "bg-warning" : "bg-success"
+            }`}
+          style={{ width: `${strength}%` }}
+        />
+      </div> */}
+
+      {/* PASSWORD RULES (visible checklist) */}
+      {showRules && (
+        <>
+          {/* STRENGTH BAR */}
+          <div className="progress mb-2 password-strength">
+            <div
+              className={`progress-bar ${strength < 60 ? "bg-danger" :
+                  strength < 80 ? "bg-warning" : "bg-success"
+                }`}
+              style={{ width: `${strength}%` }}
+            />
+          </div>
+
+          {/* PASSWORD RULES */}
+          <ul className="small text-muted mb-3">
+            <li className={rules.length ? "text-success" : ""}>
+              8 characters
+            </li>
+            <li className={rules.upper ? "text-success" : ""}>
+              Uppercase letter
+            </li>
+            <li className={rules.lower ? "text-success" : ""}>
+              Lowercase letter
+            </li>
+            <li className={rules.number ? "text-success" : ""}>
+              Number
+            </li>
+            <li className={rules.special ? "text-success" : ""}>
+              Special character
+            </li>
+          </ul>
+        </>
+      )}
 
       {/* CONFIRM PASSWORD */}
-      <div className="mb-2">
-        <div className="input-group">
-          <input
-            type={showPassword ? "text" : "password"}
-            className="form-control"
-            placeholder="Confirm Password"
-            name="confirmPassword"
-            onChange={handleChange}
-          />
-          <span
-            className="input-group-text"
-            style={{ cursor: "pointer" }}
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
-          </span>
-        </div>
+      <div className="input-group mb-2">
+        <input
+          type={showPassword ? "text" : "password"}
+          className="form-control"
+          placeholder="Confirm Password"
+          name="confirmPassword"
+          onChange={handleChange}
+        />
+        <span
+          className="input-group-text"
+          style={{ cursor: "pointer" }}
+          onClick={() => setShowPassword(!showPassword)}
+        >
+          {showPassword ? <FaEyeSlash /> : <FaEye />}
+        </span>
       </div>
 
       <input
@@ -171,18 +180,28 @@ export default function Register() {
         onChange={handleChange}
       />
 
+      {error && <small className="text-danger d-block mb-2">{error}</small>}
+
       <button
         className="btn btn-success w-100"
         onClick={register}
-        disabled={passwordError !== ""}
+        disabled={strength < 100}
       >
         Register
       </button>
 
-      <p className="text-center mt-2">
+      {/* <p className="text-center mt-2">
         Already have an account? <a href="/login">Login</a>
-      </p>
+      </p> */}
+
+      {/* login */}
+      <div className="text-center mt-3">
+        <span className="text-muted">Already have an account? </span>
+        <Link to="login" className="text-decoration-none fw-bold" style={{ color: '#007bff' }}>
+          Login Here!
+        </Link>
+      </div>
+      
     </div>
   );
 }
-
