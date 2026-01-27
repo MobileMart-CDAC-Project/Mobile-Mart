@@ -120,13 +120,22 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     loadProducts();
-    loadStats();
   }, []);
 
   const loadProducts = async () => {
     try {
-      const res = await axios.get("/admin/products");
+      const res = await axios.get("/admin/products/metrics");
       setProducts(res.data);
+      
+      // Calculate stats from products
+      const totalSold = res.data.reduce((sum, p) => sum + (p.totalSold || 0), 0);
+      const revenue = res.data.reduce((sum, p) => sum + (p.totalRevenue || 0), 0);
+      
+      setStats({
+        totalProducts: res.data.length,
+        totalSold: totalSold,
+        revenue: revenue
+      });
     } catch (error) {
       console.error("Load products error:", error);
       toast.error(`Failed to load products: ${error.response?.data?.message || error.message}`);
@@ -135,8 +144,17 @@ export default function AdminDashboard() {
 
   const loadStats = async () => {
     try {
-      const res = await axios.get("/admin/dashboard");
-      setStats(res.data);
+      const res = await axios.get("/admin/products/metrics");
+      const allProducts = res.data;
+      
+      const totalSold = allProducts.reduce((sum, p) => sum + (p.totalSold || 0), 0);
+      const revenue = allProducts.reduce((sum, p) => sum + (p.totalRevenue || 0), 0);
+      
+      setStats({
+        totalProducts: allProducts.length,
+        totalSold: totalSold,
+        revenue: revenue
+      });
     } catch (error) {
       console.error("Load stats error:", error);
       toast.error(`Failed to load stats: ${error.response?.data?.message || error.message}`);
@@ -150,7 +168,6 @@ export default function AdminDashboard() {
       await axios.delete(`/admin/products/${id}`);
       toast.success("Product deleted");
       loadProducts();
-      loadStats();
     } catch {
       toast.error("Delete failed");
     }
@@ -180,7 +197,7 @@ export default function AdminDashboard() {
         <div className="col-md-4">
           <div className="card p-3">
             <h6>Total Revenue</h6>
-            <h4>₹ {stats.revenue}</h4>
+            <h4>₹{stats.revenue.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</h4>
           </div>
         </div>
       </div>
@@ -211,9 +228,9 @@ export default function AdminDashboard() {
           {products.map(p => (
             <tr key={p.productId}>
               <td>{p.name}</td>
-              <td>₹{p.price}</td>
+              <td>₹{p.price.toLocaleString()}</td>
               <td>{p.stockQuantity}</td>
-              <td>{p.soldQuantity}</td>
+              <td>{p.totalSold || 0}</td>
               <td>
                 <button
                   className="btn btn-sm btn-primary me-2"

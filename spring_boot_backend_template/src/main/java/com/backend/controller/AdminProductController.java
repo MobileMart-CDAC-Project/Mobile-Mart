@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import com.backend.dto.AdminProductDto;
 import com.backend.dto.ProductCreateDto;
 import com.backend.dto.ProductDto;
 import com.backend.dto.ProductUpdateDto;
@@ -26,16 +27,11 @@ public class AdminProductController {
     private final ProductService productService;
 
     // ===============================
-    // GET DASHBOARD STATS
+    // GET MY PRODUCTS WITH METRICS
     // ===============================
-    @GetMapping("/dashboard")
-    public ResponseEntity<DashboardStatsDto> getDashboardStats() {
-        DashboardStatsDto stats = new DashboardStatsDto(
-                (long) productService.getMyProducts().size(),  // totalProducts
-                0L,  // totalSold (will be calculated from orders)
-                0.0  // revenue (will be calculated from orders)
-        );
-        return ResponseEntity.ok(stats);
+    @GetMapping("/products/metrics")
+    public ResponseEntity<List<AdminProductDto>> myProductsWithMetrics() {
+        return ResponseEntity.ok(productService.getMyProductsWithMetrics());
     }
 
     // ===============================
@@ -81,8 +77,4 @@ public class AdminProductController {
         return ResponseEntity.noContent().build();
     }
 }
-
-
-
-
 

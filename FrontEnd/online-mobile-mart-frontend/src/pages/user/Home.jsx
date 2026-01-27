@@ -30,7 +30,8 @@ export default function Home() {
       setProducts(response.data);
       setFilteredProducts(response.data);
     } catch (error) {
-      toast.error("Failed to load products");
+      console.error("Error loading products:", error);
+      toast.error(error.response?.data?.message || "Failed to load products");
     } finally {
       setLoading(false);
     }

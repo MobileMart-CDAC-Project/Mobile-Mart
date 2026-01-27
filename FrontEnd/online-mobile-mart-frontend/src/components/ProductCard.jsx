@@ -14,7 +14,7 @@ function ProductCard({ product, isFavorite = false, onToggleFavorite }) {
 
   const imageUrl =
     product.images && product.images.length > 0
-      ? product.images[0].imageUrl
+      ? product.images[0]
       : "https://via.placeholder.com/300";
 
   const addToCart = async () => {
