@@ -17,6 +17,7 @@ import UserProfile from "./pages/user/UserProfile";
 // route guard
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Cart from "./pages/user/Cart"
+import Checkout from "./pages/user/Checkout"
 import OrderSuccess from "./pages/user/OrderSuccess";
 import OrderDetails from "./pages/user/OrderDetails";
 import AdminOrders from "./pages/admin/AdminOrders";
@@ -80,6 +81,11 @@ function App() {
         <Route path="/cart" element={
            <ProtectedRoute role="USER">
            <Cart />
+           </ProtectedRoute>
+        } />
+        <Route path="/checkout" element={
+           <ProtectedRoute role="USER">
+           <Checkout />
            </ProtectedRoute>
         } />
         <Route

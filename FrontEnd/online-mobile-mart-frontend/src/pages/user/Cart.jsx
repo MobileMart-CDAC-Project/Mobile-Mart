@@ -61,20 +61,6 @@ function Cart() {
   };
 
   // =====================
-  // PLACE ORDER
-  // =====================
-  const placeOrder = async () => {
-    try {
-      await axios.post("/orders/place");
-      toast.success("Order placed successfully");
-      window.dispatchEvent(new Event('cartUpdated')); // notify navbar
-      navigate("/order-success");
-    } catch {
-      toast.error("Failed to place order");
-    }
-  };
-
-  // =====================
   // UI
   // =====================
   return (
@@ -137,9 +123,9 @@ function Cart() {
 
           <button
             className="btn btn-success mt-3"
-            onClick={placeOrder}
+            onClick={() => navigate("/checkout")}
           >
-            Place Order
+            Proceed to Checkout
           </button>
         </>
       )}
