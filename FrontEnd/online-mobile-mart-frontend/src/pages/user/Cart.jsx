@@ -6,7 +6,16 @@ import { useNavigate } from "react-router-dom";
 function Cart() {
 
   const [cart, setCart] = useState({ items: [], totalAmount: 0 });
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  // Load Razorpay script
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
 
   // =====================
   // LOAD CART
@@ -61,16 +70,65 @@ function Cart() {
   };
 
   // =====================
-  // PLACE ORDER
+  // PLACE ORDER WITH RAZORPAY
   // =====================
   const placeOrder = async () => {
+    if (cart.totalAmount === 0) {
+      toast.error("Cart is empty");
+      return;
+    }
+
+    setLoading(true);
     try {
-      await axios.post("/orders/place");
-      toast.success("Order placed successfully");
-      window.dispatchEvent(new Event('cartUpdated')); // notify navbar
-      navigate("/order-success");
-    } catch {
-      toast.error("Failed to place order");
+      // Step 1: Create order in backend
+      const orderRes = await axios.post("/orders/place");
+      const orderId = orderRes.data.orderId;
+      toast.success("Order created!");
+
+      // Step 2: Create Razorpay order
+      const paymentRes = await axios.post(
+        `/payments/create-order?amount=${Math.round(cart.totalAmount)}&currency=INR`
+      );
+      const razorpayOrder = paymentRes.data;
+
+      // Step 3: Open Razorpay checkout
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY || "rzp_test_S7MbZ6kHqolSa0",
+        amount: Math.round(cart.totalAmount) * 100,
+        currency: "INR",
+        name: "MobileMart",
+        description: "Mobile Phone Purchase",
+        order_id: razorpayOrder.id,
+        handler: async (response) => {
+          try {
+            // Step 4: Verify payment and create transaction
+            const txRes = await axios.post(`/transactions/pay/${orderId}`);
+            toast.success("Payment successful!");
+            window.dispatchEvent(new Event("cartUpdated"));
+            navigate("/order-success");
+          } catch (error) {
+            toast.error("Payment verification failed");
+            console.error(error);
+          }
+        },
+        prefill: {
+          name: "Customer",
+          email: localStorage.getItem("email") || "",
+          contact: "9999999999",
+        },
+        theme: {
+          color: "#007bff",
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      const errorMsg = error.response?.data?.message || error.message || "Unknown error occurred";
+      toast.error("Failed to process payment: " + errorMsg);
+      console.error("Payment error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -138,8 +196,9 @@ function Cart() {
           <button
             className="btn btn-success mt-3"
             onClick={placeOrder}
+            disabled={loading}
           >
-            Place Order
+            {loading ? "Processing..." : "Proceed to Payment"}
           </button>
         </>
       )}
