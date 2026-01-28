@@ -100,6 +100,12 @@ public class SecurityConfig {
 //            )
             .authorizeHttpRequests(auth -> auth
 
+            	    // ✅ ALLOW ACTUATOR FOR RAILWAY
+            	    .requestMatchers(
+            	        "/actuator/health",
+            	        "/actuator/info"
+            	    ).permitAll()
+
             	    // PUBLIC
             	    .requestMatchers(
             	        "/api/auth/**",
@@ -130,6 +136,7 @@ public class SecurityConfig {
 
             	    .anyRequest().authenticated()
             	)
+
 
             .addFilterBefore(
                     jwtAuthenticationFilter,
