@@ -8,6 +8,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DashboardStatsDto {
-    private long totalUsers;
-    private long totalOrders;
+    private Long totalProducts;
+    private Long totalSold;
+    private Double revenue;
 }
+

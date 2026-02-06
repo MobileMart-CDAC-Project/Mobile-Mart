@@ -52,16 +52,18 @@ export default function EditProduct() {
 
 
   // ================= DELETE IMAGE =================
-  const deleteImage = async (imageId) => {
+  const deleteImage = async (imageUrl) => {
     try {
-      await axios.delete(`/admin/products/${imageId}`);
+      // Extract filename from URL to identify the image
+      const filename = imageUrl.split('/').pop();
+      await axios.delete(`/admin/images/${filename}`);
       setProduct({
         ...product,
-        images: product.images.filter(i => i.imageId !== imageId)
+        images: product.images.filter(i => i !== imageUrl)
       });
       toast.success("Image deleted");
-    } catch {
-      toast.error("Failed to delete image");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to delete image");
     }
   };
 
@@ -128,17 +130,21 @@ export default function EditProduct() {
       {/* EXISTING IMAGES */}
       <h5>Current Product Images</h5>
       <div className="d-flex gap-3 flex-wrap mb-3">
-        {product.images.map(img => (
-         <div key={img.imageId} className="text-center">
-         <img src={img.imageUrl} width="120" className="img-thumbnail" />
-            <button
-            className="btn btn-danger btn-sm mt-1"
-            onClick={() => deleteImage(img.imageId)}
-         >
-           Delete
-         </button>
-        </div>
-        ))}
+        {product.images && product.images.length > 0 ? (
+          product.images.map((img, index) => (
+            <div key={index} className="text-center">
+              <img src={img} width="120" className="img-thumbnail" alt="product" />
+              <button
+                className="btn btn-danger btn-sm mt-1"
+                onClick={() => deleteImage(img)}
+              >
+                Delete
+              </button>
+            </div>
+          ))
+        ) : (
+          <p className="text-muted">No images yet</p>
+        )}
       </div>
 
       <hr />

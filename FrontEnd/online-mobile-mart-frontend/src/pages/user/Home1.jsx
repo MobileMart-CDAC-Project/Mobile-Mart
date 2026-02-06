@@ -1,3 +1,5 @@
+// original home page ui for guest user
+
 import { useEffect, useState } from "react";
 import axios from "../../utils/axiosInstance";
 import { Link } from "react-router-dom";
@@ -102,74 +104,79 @@ export default function Home() {
 
   return (
     <>
-      {/* HERO BANNER */}
-      <HomeBanner />
-  
-      {/* MAIN CONTENT */}
-      <div className="container-fluid px-4 px-lg-5 my-5">
-  
-        {/* PAGE TITLE */}
-        <div className="text-center mb-4">
-          <h2 className="fw-bold">Explore Mobiles</h2>
-          <p className="text-muted">
-            Discover latest smartphones, best deals, and new arrivals
-          </p>
+    <HomeBanner />
+    <div className="container my-5">
+      
+      <center><h3>Products</h3></center>
+
+      <ul className="d-flex justify-content-between nav">
+        <div>
+          <li className="nav-item"></li>
         </div>
-  
-        {/* TABS + SEARCH */}
-        <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
-  
-          {/* TABS */}
-          <ul className="nav nav-pills gap-2">
-            <li className="nav-item">
-              <button
-                className={`btn ${activeTab === "all" ? "btn-primary" : "btn-outline-primary"}`}
-                onClick={() => handleTabChange("all")}
-              >
-                All Products
-              </button>
-            </li>
-  
-            <li className="nav-item">
-              <button
-                className={`btn ${activeTab === "favorites" ? "btn-danger" : "btn-outline-danger"}`}
-                onClick={() => handleTabChange("favorites")}
-              >
-                ❤️ Favorites ({favorites.length})
-              </button>
-            </li>
-          </ul>
-  
-          {/* SEARCH + FILTER */}
-          <SearchAndFilter onSearch={handleSearch} onFilter={handleFilter} />
+
+        <div className="d-flex">
+          {/* show all */}
+          <li className="nav-item">
+            <button
+              className={`nav-link text-black fw-semibold ${activeTab === 'all' ? 'active' : ''}`}
+              onClick={() => handleTabChange('all')}
+              style={{
+                border: 'none',
+                background: 'none',
+                cursor: 'pointer',
+                borderBottom: activeTab === 'all' ? '2px solid #007bff' : 'none',
+                paddingBottom: '8px'
+              }}
+            >
+              All
+            </button>
+          </li>
+
+          {/* only favs */}
+          <li className="nav-item">
+            <button
+              className={`nav-link text-black fw-semibold ${activeTab === 'favorites' ? 'active' : ''}`}
+              onClick={() => handleTabChange('favorites')}
+              style={{
+                border: 'none',
+                background: 'none',
+                cursor: 'pointer',
+                borderBottom: activeTab === 'favorites' ? '2px solid #007bff' : 'none',
+                paddingBottom: '8px'
+              }}
+            >
+              Favorites ({favorites.length})
+            </button>
+          </li>
         </div>
-  
-        {/* PRODUCT GRID */}
-        <div className="row g-4">
-          {filteredProducts.length === 0 ? (
-            <div className="col-12 text-center py-5">
-              <p className="fs-5 text-muted">
-                {activeTab === "favorites"
-                  ? "No favorite products yet. Tap ❤️ to save your favorites!"
-                  : "No products found. Try adjusting filters."}
-              </p>
+      </ul>
+
+      <SearchAndFilter onSearch={handleSearch} onFilter={handleFilter} />
+
+      {/* products to display */}
+      <div className="row">
+        {filteredProducts.length === 0 ? (
+          <div className="col-12 text-center">
+            <p className="text-muted">
+              {activeTab === 'favorites'
+                ? "No favorite products yet. Click the heart icon to add favorites!"
+                : "No products found matching your criteria."
+              }
+            </p>
+          </div>
+        ) : (
+          filteredProducts.map(product => (
+            <div className="col-lg-3 col-md-4 col-sm-6 mb-4" key={product.productId}>
+              <ProductCard
+                product={product}
+                isFavorite={favorites.includes(product.productId)}
+                onToggleFavorite={toggleFavorite}
+              />
             </div>
-          ) : (
-            filteredProducts.map(product => (
-              <div
-                className="col-xl-3 col-lg-4 col-md-6 col-sm-6"
-                key={product.productId}
-              >
-                <ProductCard
-                  product={product}
-                  isFavorite={favorites.includes(product.productId)}
-                  onToggleFavorite={toggleFavorite}
-                />
-              </div>
-            ))
-          )}
-        </div>
+          ))
+        )}
       </div>
+    </div>
     </>
   );
-  }
+}

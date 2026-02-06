@@ -16,8 +16,6 @@ import lombok.Setter;
 
 
 
-
-
 @Entity
 @Table(name = "product_images")
 @Getter

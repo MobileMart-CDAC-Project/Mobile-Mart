@@ -11,4 +11,6 @@ public interface ImageService {
     List<String> uploadProductImages(@NonNull Long productId, MultipartFile[] files);
 
     void deleteImage(@NonNull Long imageId);
+
+    void deleteImageByFilename(@NonNull String filename);
 }

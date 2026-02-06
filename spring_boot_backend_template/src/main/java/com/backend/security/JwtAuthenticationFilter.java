@@ -1,18 +1,95 @@
+//package com.backend.security;
+//
+//
+//
+//import java.io.IOException;
+//import java.util.List;
+//
+//import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+//import org.springframework.security.core.authority.SimpleGrantedAuthority;
+//import org.springframework.security.core.context.SecurityContextHolder;
+//import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+//import org.springframework.stereotype.Component;
+//import org.springframework.web.filter.OncePerRequestFilter;
+//
+//import org.springframework.lang.NonNull;
+//
+//import jakarta.servlet.FilterChain;
+//import jakarta.servlet.ServletException;
+//import jakarta.servlet.http.HttpServletRequest;
+//import jakarta.servlet.http.HttpServletResponse;
+//import lombok.RequiredArgsConstructor;
+//
+//@Component
+//@RequiredArgsConstructor
+//public class JwtAuthenticationFilter extends OncePerRequestFilter {
+//
+//    private final JwtUtil jwtUtil;
+//
+//    @Override
+//    protected void doFilterInternal(
+//            @NonNull HttpServletRequest request,
+//            @NonNull HttpServletResponse response,
+//            @NonNull FilterChain filterChain)
+//            throws ServletException, IOException {
+//
+//        final String authHeader = request.getHeader("Authorization");
+//        
+//
+//        // If no token, continue filter chain
+//        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
+//
+//        // Extract token
+//        String token = authHeader.substring(7);
+//        // 2️⃣ Validate token
+//        if (!jwtUtil.validateToken(token)) {
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
+//
+//        try {
+//            String email = jwtUtil.extractEmail(token);
+//            String role = jwtUtil.extractRole(token);
+//
+//            // Create authentication object
+//            UsernamePasswordAuthenticationToken authentication =
+//                    new UsernamePasswordAuthenticationToken(
+//                            email,
+//                            null,
+//                            List.of(new SimpleGrantedAuthority("ROLE_" + role))
+//                    );
+//
+//            authentication.setDetails(
+//                    new WebAuthenticationDetailsSource().buildDetails(request)
+//            );
+//
+//            SecurityContextHolder.getContext().setAuthentication(authentication);
+//
+//        } catch (Exception e) {
+//            // Invalid token → clear context
+//            SecurityContextHolder.clearContext();
+//        }
+//
+//        filterChain.doFilter(request, response);
+//    }
+//}
+
+
 package com.backend.security;
-
-
 
 import java.io.IOException;
 import java.util.List;
 
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import org.springframework.lang.NonNull;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -33,18 +110,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
-        final String authHeader = request.getHeader("Authorization");
-        
+        String path = request.getRequestURI();
 
-        // If no token, continue filter chain
+        // ✅ BYPASS JWT FILTER FOR ACTUATOR (Railway Healthcheck)
+        if (path.startsWith("/actuator")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        final String authHeader = request.getHeader("Authorization");
+
+        // No Authorization header → continue
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // Extract token
         String token = authHeader.substring(7);
-        // 2️⃣ Validate token
+
+        // Invalid token → continue without authentication
         if (!jwtUtil.validateToken(token)) {
             filterChain.doFilter(request, response);
             return;
@@ -54,7 +138,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String email = jwtUtil.extractEmail(token);
             String role = jwtUtil.extractRole(token);
 
-            // Create authentication object
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
                             email,
@@ -69,7 +152,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
         } catch (Exception e) {
-            // Invalid token → clear context
             SecurityContextHolder.clearContext();
         }
 

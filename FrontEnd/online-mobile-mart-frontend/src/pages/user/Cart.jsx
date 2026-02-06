@@ -104,6 +104,10 @@ function Cart() {
             // Step 4: Verify payment and create transaction
             const txRes = await axios.post(`/transactions/pay/${orderId}`);
             toast.success("Payment successful!");
+            
+            // Step 5: Clear cart only after successful payment
+            await axios.post(`/orders/${orderId}/confirm`);
+            
             window.dispatchEvent(new Event("cartUpdated"));
             navigate("/order-success");
           } catch (error) {

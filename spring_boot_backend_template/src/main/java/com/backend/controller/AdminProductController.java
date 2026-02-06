@@ -8,16 +8,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import com.backend.dto.AdminProductDto;
 import com.backend.dto.ProductCreateDto;
 import com.backend.dto.ProductDto;
 import com.backend.dto.ProductUpdateDto;
+import com.backend.dto.DashboardStatsDto;
 import com.backend.service.ProductService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/admin/products")
+@RequestMapping("/api/admin")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminProductController {
@@ -25,9 +27,17 @@ public class AdminProductController {
     private final ProductService productService;
 
     // ===============================
+    // GET MY PRODUCTS WITH METRICS
+    // ===============================
+    @GetMapping("/products/metrics")
+    public ResponseEntity<List<AdminProductDto>> myProductsWithMetrics() {
+        return ResponseEntity.ok(productService.getMyProductsWithMetrics());
+    }
+
+    // ===============================
     // ADD PRODUCT (ADMIN)
     // ===============================
-    @PostMapping
+    @PostMapping("/products")
     public ResponseEntity<ProductDto> addProduct(
             @Valid @RequestBody ProductCreateDto dto) {
 
@@ -37,7 +47,7 @@ public class AdminProductController {
     // ===============================
     // GET MY PRODUCTS (ADMIN)
     // ===============================
-    @GetMapping
+    @GetMapping("/products")
     public ResponseEntity<List<ProductDto>> myProducts() {
 
         return ResponseEntity.ok(productService.getMyProducts());
@@ -46,7 +56,7 @@ public class AdminProductController {
     // ===============================
     // UPDATE PRODUCT (ADMIN)
     // ===============================
-    @PutMapping("/{productId}")
+    @PutMapping("/products/{productId}")
     public ResponseEntity<ProductDto> updateProduct(
             @PathVariable @NonNull Long productId,
             @Valid @RequestBody ProductUpdateDto dto) {
@@ -59,7 +69,7 @@ public class AdminProductController {
     // ===============================
     // DELETE PRODUCT (ADMIN)
     // ===============================
-    @DeleteMapping("/{productId}")
+    @DeleteMapping("/products/{productId}")
     public ResponseEntity<Void> deleteProduct(
             @PathVariable @NonNull Long productId) {
 
@@ -67,8 +77,4 @@ public class AdminProductController {
         return ResponseEntity.noContent().build();
     }
 }
-
-
-
-
 
