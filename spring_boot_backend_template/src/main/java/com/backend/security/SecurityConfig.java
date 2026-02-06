@@ -163,6 +163,7 @@ public class SecurityConfig {
 
     CorsConfiguration config = new CorsConfiguration();
 
+    //allow all origins for development purposes
     config.setAllowedOrigins(List.of(
         "http://localhost:5173",
         "http://localhost:5174",
