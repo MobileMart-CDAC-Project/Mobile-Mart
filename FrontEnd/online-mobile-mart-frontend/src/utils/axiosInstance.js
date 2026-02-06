@@ -2,7 +2,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:8080/api",
+  baseURL: import.meta.env.VITE_API_BASE_URL,
 });
 
 axiosInstance.interceptors.request.use((config) => {
@@ -27,5 +27,5 @@ axiosInstance.interceptors.response.use(
 
 export default axiosInstance;
 // JWT auto-added
-//✅ Global error handling
+// Global error handling
 
