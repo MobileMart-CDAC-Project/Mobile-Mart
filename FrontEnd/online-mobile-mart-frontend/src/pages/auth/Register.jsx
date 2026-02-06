@@ -54,7 +54,7 @@ export default function Register() {
     }
 
     try {
-      await axiosInstance.post("/auth/register", {
+      await axiosInstance.post("/api/auth/register", {
         name: form.name,
         email: form.email,
         password: form.password,
