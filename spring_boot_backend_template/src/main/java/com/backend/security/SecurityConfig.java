@@ -100,6 +100,7 @@ public class SecurityConfig {
 //            )
             .authorizeHttpRequests(auth -> auth
 
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             	    // ✅ ALLOW ACTUATOR FOR RAILWAY
             	    .requestMatchers(
             	        "/actuator/health",
@@ -158,17 +159,14 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
     
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+   @Bean
+public CorsConfigurationSource corsConfigurationSource() {
 
     CorsConfiguration config = new CorsConfiguration();
 
-    //allow all origins for development purposes
-    config.setAllowedOrigins(List.of(
-        "http://localhost:5173",
-        "http://localhost:5174",
-        "http://localhost:5175",
-        "https://mobile-mart-production-e345.up.railway.app" // RAILWAY URL
+    // ✅ IMPORTANT CHANGE
+    config.setAllowedOriginPatterns(List.of(
+        "https://mobile-mart-production-e345.up.railway.app"
     ));
 
     config.setAllowedMethods(List.of(
@@ -180,8 +178,8 @@ public class SecurityConfig {
 
     UrlBasedCorsConfigurationSource source =
             new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", config);
 
+    source.registerCorsConfiguration("/**", config);
     return source;
 }
 
