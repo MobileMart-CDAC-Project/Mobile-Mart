@@ -166,6 +166,7 @@ public CorsConfigurationSource corsConfigurationSource() {
 
     // ✅ IMPORTANT CHANGE
     config.setAllowedOriginPatterns(List.of(
+    	"http://localhost:3000",
         "https://mobile-mart-production-e345.up.railway.app"
     ));
 
